@@ -19,13 +19,36 @@ Oauth.registerService('linkedin', 2, null, function(query) {
   // include all fields from linkedin
   // https://developer.linkedin.com/documents/authentication
   var fields = _.pick(identity, whiteListed);
+
+  // list of extra fields
+  // http://developer.linkedin.com/documents/profile-fields
+  var extraFields = 'email-address,location:(name),num-connections,picture-url,public-profile-url,skills,languages,three-current-positions,recommendations-received';
+
+  // remove the whitespaces which could break the request
+  extraFields = extraFields.replace(/\s+/g, '');
+
+  fields = getExtraData(accessToken, extraFields, fields);
+
   _.extend(serviceData, fields);
 
   return {
     serviceData: serviceData,
-    options: {profile: {name: identity.firstName + ' ' + identity.lastName }}
+    options: {
+      profile: fields
+    }
   };
 });
+
+var getExtraData = function(accessToken, extraFields, fields) {
+  var url = 'https://api.linkedin.com/v1/people/~:(' + extraFields + ')';
+  var response = Meteor.http.get(url, {
+    params: {
+      oauth2_access_token: accessToken,
+      format: 'json'
+    }
+  }).data;
+  return _.extend(fields, response);
+}
 
 // checks whether a string parses as JSON
 var isJSON = function (str) {
@@ -49,15 +72,15 @@ var getTokenResponse = function (query) {
   try {
     // Request an access token
     responseContent = Meteor.http.post(
-    "https://api.linkedin.com/uas/oauth2/accessToken", {
-      params: {
-        grant_type: 'authorization_code',
-        client_id: config.clientId,
-        client_secret: config.secret,
-        code: query.code,
-        redirect_uri: Meteor.absoluteUrl("_oauth/linkedin?close")
-      }
-    }).content;
+      "https://api.linkedin.com/uas/oauth2/accessToken", {
+        params: {
+          grant_type: 'authorization_code',
+          client_id: config.clientId,
+          client_secret: config.secret,
+          code: query.code,
+          redirect_uri: Meteor.absoluteUrl("_oauth/linkedin?close")
+        }
+      }).content;
   } catch (err) {
     throw new Error("Failed to complete OAuth handshake with LinkedIn. " + err.message);
   }
