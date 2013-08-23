@@ -1,3 +1,5 @@
+var Oauth = Package.oauth.Oauth;
+
 var urlUtil = Npm.require('url');
 
 Oauth.registerService('linkedin', 2, null, function(query) {
