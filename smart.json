@@ -3,6 +3,6 @@
   "description": "LinkedIn connect flow",
   "homepage": "https://github.com/yefim/meteor-linkedin",
   "author": "Geoffrey Vedernikoff (http://twitter.com/yefim)",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "git": "https://github.com/yefim/meteor-linkedin.git"
 }
