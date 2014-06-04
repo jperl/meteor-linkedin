@@ -32,6 +32,8 @@ Oauth.registerService('linkedin', 2, null, function(query) {
   fields = getExtraData(accessToken, extraFields, fields);
 
   _.extend(serviceData, fields);
+  
+  fields.name = identity.firstName + ' ' + identity.lastName;
 
   return {
     serviceData: serviceData,
