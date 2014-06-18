@@ -29,5 +29,5 @@ LinkedIn.requestCredential = function (options, credentialRequestCompleteCallbac
         '&redirect_uri=' + encodeURIComponent(Meteor.absoluteUrl('_oauth/linkedin?close')) +
         '&scope=' + scope + '&state=' + credentialToken;
 
-  Oauth.initiateLogin(credentialToken, loginUrl, credentialRequestCompleteCallback);
+  OAuth.initiateLogin(credentialToken, loginUrl, credentialRequestCompleteCallback);
 };
