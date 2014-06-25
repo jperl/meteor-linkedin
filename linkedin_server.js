@@ -1,8 +1,6 @@
-var Oauth = Package.oauth.Oauth;
-
 var urlUtil = Npm.require('url');
 
-Oauth.registerService('linkedin', 2, null, function(query) {
+OAuth.registerService('linkedin', 2, null, function(query) {
 
   var response = getTokenResponse(query);
   var accessToken = response.accessToken;
@@ -32,7 +30,7 @@ Oauth.registerService('linkedin', 2, null, function(query) {
   fields = getExtraData(accessToken, extraFields, fields);
 
   _.extend(serviceData, fields);
-  
+
   fields.name = identity.firstName + ' ' + identity.lastName;
 
   return {
@@ -119,6 +117,6 @@ var getIdentity = function (accessToken) {
   }
 };
 
-LinkedIn.retrieveCredential = function(credentialToken) {
-  return Oauth.retrieveCredential(credentialToken);
+LinkedIn.retrieveCredential = function(credentialToken, credentialSecret) {
+  return OAuth.retrieveCredential(credentialToken, credentialSecret)
 };
