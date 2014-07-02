@@ -22,7 +22,7 @@ OAuth.registerService('linkedin', 2, null, function(query) {
 
   // list of extra fields
   // http://developer.linkedin.com/documents/profile-fields
-  var extraFields = 'email-address,location:(name),num-connections,picture-url,public-profile-url,skills,languages,three-current-positions,recommendations-received';
+  var extraFields = 'email-address,location:(name),num-connections,picture-url;secure=true,public-profile-url,skills,languages,three-current-positions,recommendations-received';
 
   // remove the whitespaces which could break the request
   extraFields = extraFields.replace(/\s+/g, '');
