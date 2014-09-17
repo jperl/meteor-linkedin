@@ -1,3 +1,1 @@
-if (typeof LinkedIn === 'undefined') {
-  LinkedIn = {};
-}
+LinkedIn = {};

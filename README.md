@@ -1,19 +1,6 @@
 meteor-linkedin
 ===============
 
-A Oauth2 wrapper for the LinkedIn API
+LinkedIn accounts OAuth flow. Similar to other oauth packages such as [github](https://github.com/meteor/meteor/tree/devel/packages/github).
 
-##Installation
-
-* Install accounts-ui pacakge: `mrt accounts-ui`
-* `mrt add linkedin`
-
-##Usage
-
-Creates a new function `Meteor.loginWithLinkedin(options, callback)`
-
-This is the backbone of `accounts-linkedin`
-
-
-
-
+This is the backbone of `jonperl:accounts-linkedin` -- which is probably the package you want.

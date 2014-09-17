@@ -4,30 +4,44 @@
 //   completion. Takes one argument, credentialToken on success, or Error on
 //   error.
 LinkedIn.requestCredential = function (options, credentialRequestCompleteCallback) {
-  // support both (options, callback) and (callback).
-  if (!credentialRequestCompleteCallback && typeof options === 'function') {
-    credentialRequestCompleteCallback = options;
-    options = {};
-  }
+    // support a callback without options
+    if (!credentialRequestCompleteCallback && typeof options === 'function') {
+        credentialRequestCompleteCallback = options;
+        options = {};
+    }
 
-  var config = ServiceConfiguration.configurations.findOne({service: 'linkedin'});
-  if (!config) {
-    credentialRequestCompleteCallback && credentialRequestCompleteCallback(new ServiceConfiguration.ConfigError("Service not configured"));
-    return;
-  }
+    var config = ServiceConfiguration.configurations.findOne({
+        service: 'linkedin'
+    });
+    if (!config) {
+        credentialRequestCompleteCallback && credentialRequestCompleteCallback(new ServiceConfiguration.ConfigError());
+        return;
+    }
 
-  var credentialToken = Random.id();
+    var credentialToken = Random.secret();
 
-  var scope = [];
-  if (options && options.requestPermissions) {
-      scope = options.requestPermissions.join('+');
-  }
+    var loginStyle = OAuth._loginStyle('linkedin', config, options);
 
-  var loginUrl =
-        'https://www.linkedin.com/uas/oauth2/authorization' +
-        '?response_type=code' + '&client_id=' + config.clientId +
-        '&redirect_uri=' + encodeURIComponent(Meteor.absoluteUrl('_oauth/linkedin?close')) +
-        '&scope=' + scope + '&state=' + credentialToken;
+    var scope = [];
+    if (options && options.requestPermissions) {
+        scope = options.requestPermissions.join('+');
+    }
 
-  OAuth.initiateLogin(credentialToken, loginUrl, credentialRequestCompleteCallback);
+    var loginUrl =
+        'https://www.linkedin.com/uas/oauth2/authorization?' +
+            'state=' + OAuth._stateParam(loginStyle, credentialToken) +
+            '&response_type=code&' +
+            'client_id=' + config.clientId +
+            '&scope=' + scope;
+
+    loginUrl += '&redirect_uri=' + OAuth._redirectUri('linkedin', config);
+
+    OAuth.launchLogin({
+        loginService: 'linkedin',
+        loginStyle: loginStyle,
+        loginUrl: loginUrl,
+        credentialRequestCompleteCallback: credentialRequestCompleteCallback,
+        credentialToken: credentialToken,
+        popupOptions: {width: 470, height: 420}
+    });
 };
