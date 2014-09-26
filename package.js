@@ -1,24 +1,25 @@
 Package.describe({
-    name: 'jonperl:linkedin',
-    summary: 'LinkedIn accounts OAuth flow',
-    version: '1.0.0',
-    git: 'https://github.com/jperl/meteor-linkedin'
+  name: 'jonperl:linkedin',
+  summary: 'LinkedIn accounts OAuth flow',
+  version: '1.1.0',
+  git: 'https://github.com/jperl/meteor-linkedin'
 });
 
 Package.onUse(function (api) {
-    api.versionsFrom('METEOR@0.9.2');
+  api.versionsFrom('METEOR@0.9.2');
 
-    api.use('oauth2', ['client', 'server']);
-    api.use('oauth', ['client', 'server']);
-    api.use('http', 'server');
-    api.use(['underscore', 'service-configuration'], ['client', 'server']);
-    api.use(['random', 'templating'], 'client');
+  var both = ['server', 'web'];
 
-    api.addFiles('linkedin_common.js', ['client', 'server']);
-    api.addFiles(['linkedin_configure.html',
-        'linkedin_configure.js'], 'client');
-    api.addFiles('linkedin_server.js', 'server');
-    api.addFiles('linkedin_client.js', 'client');
+  api.use(['oauth2', 'oauth', 'service-configuration', 'underscore'], both);
+  api.use('http', 'server');
+  api.use(['random', 'templating'], 'web');
 
-    api.export('LinkedIn');
+  api.addFiles('linkedin_common.js', both);
+  api.addFiles('linkedin_server.js', 'server');
+  api.addFiles([
+    'linkedin_client.js',
+    'linkedin_configure.html', 'linkedin_configure.js'
+  ], 'web');
+
+  api.export(['LinkedIn', 'Linkedin'], both);
 });
