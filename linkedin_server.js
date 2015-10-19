@@ -8,7 +8,7 @@ LinkedIn.config = {
 };
 
 // These fields are requested by default and added to the user's profile
-var whiteListed = ['firstName', 'headline', 'lastName'];
+var whiteListed = ['firstName', 'headline', 'lastName', 'siteStandardProfileRequest'];
 
 // You can use LinkedIn.config to add extra fields
 var getFields = function(){
