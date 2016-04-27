@@ -4,11 +4,21 @@ var urlUtil = Npm.require('url');
 // 		
 // 		fields: an Array of LinkedIn fields, such as ['id','firstName','lastName','emailAddress','headline','memberUrlResources','pictureUrl','location','publicProfileUrl','siteStandardProfileRequest']
 LinkedIn.config = {
-	fields: []	
+	fields: []
 };
 
 // These fields are requested by default and added to the user's profile
-var whiteListed = ['firstName', 'headline', 'lastName', 'siteStandardProfileRequest'];
+var whiteListed = [
+    'id',
+    'firstName',
+    'lastName',
+    'emailAddress',
+    'headline',
+    'memberUrlResources',
+    'pictureUrl',
+    'location',
+    'publicProfileUrl',
+    'siteStandardProfileRequest'];
 
 // You can use LinkedIn.config to add extra fields
 var getFields = function(){
@@ -37,6 +47,7 @@ OAuth.registerService('linkedin', 2, null, function (query) {
     var fields = _.pick(identity, getFields());
 
     fields.name = identity.firstName + ' ' + identity.lastName;
+    _.extend(serviceData, fields);
 
     return {
         serviceData: serviceData,
