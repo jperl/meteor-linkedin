@@ -56,7 +56,7 @@ var getTokens = function (query) {
                     grant_type: 'authorization_code',
                     code: query.code,
                     client_id: config.clientId,
-                    client_secret: config.secret,
+                    client_secret: OAuth.openSecret(config.secret),
                     redirect_uri: OAuth._redirectUri('linkedin', config)
                 }
             }).content;
