@@ -1,27 +1,53 @@
 var urlUtil = Npm.require('url');
 
+// Use this for advanced configuration of LinkedIn integration, such as customizing what the API returns based on your application needs & requested permissions. Possible options:
+// 		
+// 		fields: an Array of LinkedIn fields, such as ['id','firstName','lastName','emailAddress','headline','memberUrlResources','pictureUrl','location','publicProfileUrl','siteStandardProfileRequest']
+LinkedIn.config = {
+	fields: []
+};
+
+// These fields are requested by default and added to the user's profile
+var whiteListed = [
+    'id',
+    'firstName',
+    'lastName',
+    'emailAddress',
+    'headline',
+    'memberUrlResources',
+    'pictureUrl',
+    'location',
+    'publicProfileUrl',
+    'siteStandardProfileRequest'];
+
+// You can use LinkedIn.config to add extra fields
+var getFields = function(){
+	return _.uniq(whiteListed.concat(LinkedIn.config.fields || []));
+}
+
 OAuth.registerService('linkedin', 2, null, function (query) {
 
     var response = getTokens(query);
     var accessToken = response.accessToken;
     var identity = getIdentity(accessToken);
 
-    var profileUrl = identity.siteStandardProfileRequest.url;
-    var urlParts = urlUtil.parse(profileUrl, true);
+		if(identity.siteStandardProfileRequest){
+			var profileUrl = identity.siteStandardProfileRequest.url;
+			var urlParts = urlUtil.parse(profileUrl, true);
+		}
 
     var serviceData = {
-        id: urlParts.query.id || Random.id(),
+        id: identity.id || urlParts.query.id || Random.id(),
         accessToken: OAuth.sealSecret(accessToken),
         expiresAt: (+new Date) + (1000 * response.expiresIn)
     };
 
-    var whiteListed = ['firstName', 'headline', 'lastName'];
-
-    // include all fields from linkedin
+    // include selected fields from linkedin
     // https://developer.linkedin.com/documents/authentication
-    var fields = _.pick(identity, whiteListed);
+    var fields = _.pick(identity, getFields());
 
     fields.name = identity.firstName + ' ' + identity.lastName;
+    _.extend(serviceData, fields);
 
     return {
         serviceData: serviceData,
@@ -56,7 +82,7 @@ var getTokens = function (query) {
                     grant_type: 'authorization_code',
                     code: query.code,
                     client_id: config.clientId,
-                    client_secret: config.secret,
+                    client_secret: OAuth.openSecret(config.secret),
                     redirect_uri: OAuth._redirectUri('linkedin', config)
                 }
             }).content;
@@ -87,7 +113,7 @@ var getTokens = function (query) {
 
 var getIdentity = function (accessToken) {
     try {
-        return HTTP.get('https://www.linkedin.com/v1/people/~', {
+        return HTTP.get('https://www.linkedin.com/v1/people/~:('+getFields().join(',')+')', {
             params: { oauth2_access_token: accessToken, format: 'json'}
         }).data;
     } catch (err) {
